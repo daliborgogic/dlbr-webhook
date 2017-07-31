@@ -10,15 +10,10 @@ EOL
 
 $ npm run dev
 
-# Simulate request without credentials
-$ curl -X POST --header \
-  && "X-Contentful-Topic: ContentManagement.Entry.publish" \
-  && localhost:5000
-
-# with authentication
-$ curl -X POST -u username:password \
-  && --header "X-Contentful-Topic: ContentManagement.Entry.publish" \
-  && localhost:5000
+$ curl -X POST \
+  -u username:password \
+  --header "X-Contentful-Topic: ContentManagement.Entry.publish" \
+  localhost:5000
 ```
 
 ### License

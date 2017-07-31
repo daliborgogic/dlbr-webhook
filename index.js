@@ -1,12 +1,14 @@
 'use strict'
 const fs = require('fs')
 const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const remove = require('lodash.remove')
+const merge = require('lodash.merge')
 const webhookServer = require('contentful-webhook-server')({
-  path: './',
   username: process.env.CONTENTFUL_WEBHOOK_USERNAME,
   password: process.env.CONTENTFUL_WEBHOOK_PASSWORD
 })
-const app = express()
 const PORT = process.env.PORT || 5000
 const contentful = require('contentful')
 const client = contentful.createClient({
@@ -14,65 +16,39 @@ const client = contentful.createClient({
   accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
 })
 
-client.sync({
-  initial: true
-})
-.then(response => {
-  return new Promise((resolve, reject) => {
-    fs.writeFile('data.json', JSON.stringify(response), (err, data) => {
-      if (err) reject(err)
-      else resolve(data)
+client.sync({ initial: true })
+  .then(response => {
+    return new Promise((resolve, reject) => {
+      fs.writeFile('data.json', JSON.stringify(response), (err, data) => {
+        if (err) reject(err)
+        else resolve(data)
+      })
     })
   })
-})
-.catch(err => console.log(err))
+  .catch(err => console.log(err))
 
 app.get('/', (req, res) => {
-  res.send('Express response')
+  res.json({status: 200})
 })
 
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.json({type: 'application/*'}))
 app.use('/', webhookServer.mountAsMiddleware)
+
 
 const server = app.listen(PORT, (() =>
   console.log(`*:${PORT}`)
 ))
 
-// Handler for all successful requests
-// Is not emitted when an error occurs
-webhookServer.on('ContentManagement.*', (topic, req) =>
-  // topic is available as string
-  // e.g. ContentManagement.Asset.unpublish
-  console.log('Request came in for: ' + topic)
-)
-
-webhookServer.on('ContentManagement.ContentType.publish', (req =>
-  console.log('A content type was published!')
-))
-
-webhookServer.on('ContentManagement.ContentType.unpublish', (req =>
-  console.log('A content type was unpublished!')
-))
-
-webhookServer.on('ContentManagement.Entry.publish', (req =>
+webhookServer.on('ContentManagement.Entry.publish', (req => {
   console.log('An entry was published!')
-))
+  console.log(req.body)
+}))
 
-webhookServer.on('ContentManagement.Entry.unpublish', (req =>
+webhookServer.on('ContentManagement.Entry.unpublish', (req => {
   console.log('An entry was unpublished!')
-))
-
-webhookServer.on('ContentManagement.Asset.publish', (req =>
-  console.log('An asset was published!')
-))
-
-webhookServer.on('ContentManagement.Asset.unpublish', (req =>
-  console.log('An asset was unpublished!')
-))
-
-// Handle errors
-webhookServer.on('ContentManagement.error', (err, req) =>
-  console.log(err)
-)
+  console.log(req.body)
+}))
 
 function cleanup () {
   console.log(` Bye .`)

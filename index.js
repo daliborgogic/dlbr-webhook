@@ -2,6 +2,7 @@
 const fs = require('fs')
 const express = require('express')
 const webhookServer = require('contentful-webhook-server')({
+  path: './',
   username: process.env.CONTENTFUL_WEBHOOK_USERNAME,
   password: process.env.CONTENTFUL_WEBHOOK_PASSWORD
 })
@@ -14,7 +15,7 @@ const client = contentful.createClient({
 })
 
 client.sync({
-  initial: true,
+  initial: true
 })
 .then(response => {
   return new Promise((resolve, reject) => {
@@ -32,7 +33,7 @@ app.get('/', (req, res) => {
 
 app.use('/', webhookServer.mountAsMiddleware)
 
-const server = app.listen(PORT, (_ =>
+const server = app.listen(PORT, (() =>
   console.log(`*:${PORT}`)
 ))
 
@@ -52,13 +53,13 @@ webhookServer.on('ContentManagement.ContentType.unpublish', (req =>
   console.log('A content type was unpublished!')
 ))
 
-webhookServer.on('ContentManagement.Entry.publish', (req => {
+webhookServer.on('ContentManagement.Entry.publish', (req =>
   console.log('An entry was published!')
-}))
+))
 
-webhookServer.on('ContentManagement.Entry.unpublish', (req => {
+webhookServer.on('ContentManagement.Entry.unpublish', (req =>
   console.log('An entry was unpublished!')
-}))
+))
 
 webhookServer.on('ContentManagement.Asset.publish', (req =>
   console.log('An asset was published!')

@@ -2,8 +2,8 @@
 const fs = require('fs')
 const express = require('express')
 const webhookServer = require('contentful-webhook-server')({
-  username: 'username',
-  password: 'password'
+  username: process.env.CONTENTFUL_WEBHOOK_USERNAME,
+  password: process.env.CONTENTFUL_WEBHOOK_PASSWORD
 })
 const app = express()
 const PORT = process.env.PORT || 5000

@@ -28,11 +28,14 @@ client.sync({ initial: true })
   .catch(err => console.log(err))
 
 app.get('/', (req, res) => {
-   fs.readFile('data.json', (err, data, i) => {
-     if (err) console.error(err)
-    let obj = JSON.parse(data)
-     res.json(obj)
-   })
+  return new Promise((resolve, reject) => {
+    fs.readFile('entries.json', (err, data) => {
+      if (err) reject(err)
+      let obj = JSON.parse(data)
+      res.json(obj)
+      resolve(data)
+    })
+  })
 })
 
 app.use(bodyParser.urlencoded({extended:true}))
@@ -44,31 +47,39 @@ const server = app.listen(PORT, (() =>
   console.log(`*:${PORT}`)
 ))
 
+function writeFile (file, obj) {
+   return new Promise((resolve, reject) => {
+    fs.writeFile(file, JSON.stringify(obj), 'utf-8', (err, data) => {
+      if (err) reject(err)
+      else resolve(data)
+    })
+  })
+}
+
 webhookServer.on('ContentManagement.Entry.publish', (req => {
   console.log('An entry was published!')
-  fs.readFile('entries.json', (err, data, id) => {
-    if (err) console.error(err)
-    let obj = JSON.parse(data)
-    obj.push(req.body)
-    fs.writeFile('entries.json', JSON.stringify(obj), 'utf-8', (err, data) => {
-      if (err) console.error(err)
-      console.log('done!')
+  return new Promise((resolve, reject) => {
+    fs.readFile('entries.json', (err, data) => {
+      if (err) reject(err)
+      let obj = JSON.parse(data)
+      obj.push(req.body)
+      writeFile('entries.json', obj)
+      resolve(data)
     })
   })
 }))
 
 webhookServer.on('ContentManagement.Entry.unpublish', (req => {
   console.log('An entry was unpublished!')
-  fs.readFile('entries.json', (err, data, id) => {
-    if (err) console.error(err)
-    let obj = JSON.parse(data)
-    remove(obj, e => e.sys.id === req.body.sys.id)
-    fs.writeFile('entries.json', JSON.stringify(obj), 'utf-8', (err, data) => {
-      if (err) console.error(err)
-      console.log('done!')
+  return new Promise((resolve, reject) => {
+    fs.readFile('entries.json', (err, data) => {
+      if (err) reject(err)
+      let obj = JSON.parse(data)
+      remove(obj, e => e.sys.id === req.body.sys.id)
+      writeFile('entries.json', obj)
+      resolve(data)
     })
   })
-
 }))
 
 function cleanup () {

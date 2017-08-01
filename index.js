@@ -28,7 +28,11 @@ client.sync({ initial: true })
   .catch(err => console.log(err))
 
 app.get('/', (req, res) => {
-  res.json({status: 200})
+   fs.readFile('data.json', (err, data, i) => {
+     if (err) console.error(err)
+    let obj = JSON.parse(data)
+     res.json(obj['entries'])
+   })
 })
 
 app.use(bodyParser.urlencoded({extended:true}))
@@ -42,12 +46,29 @@ const server = app.listen(PORT, (() =>
 
 webhookServer.on('ContentManagement.Entry.publish', (req => {
   console.log('An entry was published!')
-  console.log(req.body)
+  fs.readFile('data.json', (err, data, id) => {
+    if (err) console.error(err)
+    let obj = JSON.parse(data)
+    obj['entries'].push(req.body)
+    fs.writeFile('data.json', JSON.stringify(obj), 'utf-8', (err, data) => {
+      if (err) console.error(err)
+      console.log('done!')
+    })
+  })
 }))
 
 webhookServer.on('ContentManagement.Entry.unpublish', (req => {
   console.log('An entry was unpublished!')
-  console.log(req.body)
+  fs.readFile('data.json', (err, data, id) => {
+    if (err) console.error(err)
+    let obj = JSON.parse(data)
+    remove(obj['entries'], e => e.sys.id === req.body.sys.id)
+    fs.writeFile('data.json', JSON.stringify(obj), 'utf-8', (err, data) => {
+      if (err) console.error(err)
+      console.log('done!')
+    })
+  })
+
 }))
 
 function cleanup () {

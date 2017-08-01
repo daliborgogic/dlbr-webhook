@@ -17,7 +17,7 @@ const client = contentful.createClient({
 
 client.sync({ initial: true })
   .then(response => {
-    return new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
       fs.writeFile('entries.json', JSON.stringify(response['entries']), (err, data) => {
         if (err) reject(err)
         else resolve(data)
@@ -56,8 +56,8 @@ function writeFile (file, obj) {
 }
 
 webhookServer.on('ContentManagement.Entry.publish', (req => {
-  console.log('An entry was published!')
-  return new Promise((resolve, reject) => {
+  // console.log('An entry was published!')
+  new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
       let obj = JSON.parse(data)
@@ -69,8 +69,8 @@ webhookServer.on('ContentManagement.Entry.publish', (req => {
 }))
 
 webhookServer.on('ContentManagement.Entry.unpublish', (req => {
-  console.log('An entry was unpublished!')
-  return new Promise((resolve, reject) => {
+  // console.log('An entry was unpublished!')
+  new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
       let obj = JSON.parse(data)

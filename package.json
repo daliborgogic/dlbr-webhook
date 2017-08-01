@@ -1,12 +1,12 @@
 {
   "name": "dlbr-webhook",
   "version": "1.0.0",
-  "description": "",
+  "description": "Webhooks in Contentful notify you when content in your space has changed.",
   "scripts": {
     "dev": "nodemon --ignore entries.json -r dotenv/config index.js",
     "start": "NODE_ENV=production node -r dotenv/config index.js"
   },
-  "author": "",
+  "author": "Dalibor Gogic <mail@daliborgogic.com>",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.17.2",

@@ -4,7 +4,6 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const remove = require('lodash.remove')
-const merge = require('lodash.merge')
 const webhookServer = require('contentful-webhook-server')({
   username: process.env.CONTENTFUL_WEBHOOK_USERNAME,
   password: process.env.CONTENTFUL_WEBHOOK_PASSWORD

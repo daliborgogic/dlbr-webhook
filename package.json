@@ -14,7 +14,6 @@
     "contentful-webhook-server": "^1.2.0",
     "dotenv": "^4.0.0",
     "express": "^5.0.0-alpha.2",
-    "lodash.merge": "^4.6.0",
     "lodash.remove": "^4.7.0"
   },
   "devDependencies": {

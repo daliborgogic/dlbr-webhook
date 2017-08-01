@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "nodemon --ignore data.json -r dotenv/config index.js",
+    "dev": "nodemon --ignore entries.json -r dotenv/config index.js",
     "start": "NODE_ENV=production node -r dotenv/config index.js"
   },
   "author": "",

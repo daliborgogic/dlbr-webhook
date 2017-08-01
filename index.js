@@ -19,7 +19,7 @@ const client = contentful.createClient({
 client.sync({ initial: true })
   .then(response => {
     return new Promise((resolve, reject) => {
-      fs.writeFile('data.json', JSON.stringify(response['entries']), (err, data) => {
+      fs.writeFile('entries.json', JSON.stringify(response['entries']), (err, data) => {
         if (err) reject(err)
         else resolve(data)
       })
@@ -46,11 +46,11 @@ const server = app.listen(PORT, (() =>
 
 webhookServer.on('ContentManagement.Entry.publish', (req => {
   console.log('An entry was published!')
-  fs.readFile('data.json', (err, data, id) => {
+  fs.readFile('entries.json', (err, data, id) => {
     if (err) console.error(err)
     let obj = JSON.parse(data)
     obj.push(req.body)
-    fs.writeFile('data.json', JSON.stringify(obj), 'utf-8', (err, data) => {
+    fs.writeFile('entries.json', JSON.stringify(obj), 'utf-8', (err, data) => {
       if (err) console.error(err)
       console.log('done!')
     })
@@ -59,11 +59,11 @@ webhookServer.on('ContentManagement.Entry.publish', (req => {
 
 webhookServer.on('ContentManagement.Entry.unpublish', (req => {
   console.log('An entry was unpublished!')
-  fs.readFile('data.json', (err, data, id) => {
+  fs.readFile('entries.json', (err, data, id) => {
     if (err) console.error(err)
     let obj = JSON.parse(data)
     remove(obj, e => e.sys.id === req.body.sys.id)
-    fs.writeFile('data.json', JSON.stringify(obj), 'utf-8', (err, data) => {
+    fs.writeFile('entries.json', JSON.stringify(obj), 'utf-8', (err, data) => {
       if (err) console.error(err)
       console.log('done!')
     })

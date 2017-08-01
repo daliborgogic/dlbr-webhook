@@ -19,7 +19,7 @@ const client = contentful.createClient({
 client.sync({ initial: true })
   .then(response => {
     return new Promise((resolve, reject) => {
-      fs.writeFile('data.json', JSON.stringify(response), (err, data) => {
+      fs.writeFile('data.json', JSON.stringify(response['entries']), (err, data) => {
         if (err) reject(err)
         else resolve(data)
       })
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
    fs.readFile('data.json', (err, data, i) => {
      if (err) console.error(err)
     let obj = JSON.parse(data)
-     res.json(obj['entries'])
+     res.json(obj)
    })
 })
 
@@ -49,7 +49,7 @@ webhookServer.on('ContentManagement.Entry.publish', (req => {
   fs.readFile('data.json', (err, data, id) => {
     if (err) console.error(err)
     let obj = JSON.parse(data)
-    obj['entries'].push(req.body)
+    obj.push(req.body)
     fs.writeFile('data.json', JSON.stringify(obj), 'utf-8', (err, data) => {
       if (err) console.error(err)
       console.log('done!')
@@ -62,7 +62,7 @@ webhookServer.on('ContentManagement.Entry.unpublish', (req => {
   fs.readFile('data.json', (err, data, id) => {
     if (err) console.error(err)
     let obj = JSON.parse(data)
-    remove(obj['entries'], e => e.sys.id === req.body.sys.id)
+    remove(obj, e => e.sys.id === req.body.sys.id)
     fs.writeFile('data.json', JSON.stringify(obj), 'utf-8', (err, data) => {
       if (err) console.error(err)
       console.log('done!')

@@ -27,7 +27,7 @@ client.sync({ initial: true })
   .catch(err => console.log(err))
 
 app.get('/', (req, res) => {
-  return new Promise((resolve, reject) => {
+  new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
       let obj = JSON.parse(data)

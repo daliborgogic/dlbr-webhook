@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const remove = require('lodash.remove')
-const webhookServer = require('contentful-webhook-server')({
+const webhookServer = require('./lib/webhook-server')({
   username: process.env.CONTENTFUL_WEBHOOK_USERNAME,
   password: process.env.CONTENTFUL_WEBHOOK_PASSWORD
 })
@@ -17,7 +17,7 @@ const client = contentful.createClient({
 
 client.sync({ initial: true })
   .then(response => {
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       fs.writeFile('entries.json', JSON.stringify(response['entries']), (err, data) => {
         if (err) reject(err)
         else resolve(data)
@@ -27,7 +27,7 @@ client.sync({ initial: true })
   .catch(err => console.log(err))
 
 app.get('/', (req, res) => {
-  new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
       let obj = JSON.parse(data)
@@ -37,17 +37,16 @@ app.get('/', (req, res) => {
   })
 })
 
-app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json({type: 'application/*'}))
 app.use('/', webhookServer.mountAsMiddleware)
 
-
-const server = app.listen(PORT, (() =>
+app.listen(PORT, () =>
   console.log(`*:${PORT}`)
-))
+)
 
 function writeFile (file, obj) {
-   return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     fs.writeFile(file, JSON.stringify(obj), 'utf-8', (err, data) => {
       if (err) reject(err)
       else resolve(data)
@@ -55,9 +54,9 @@ function writeFile (file, obj) {
   })
 }
 
-webhookServer.on('ContentManagement.Entry.publish', (req => {
+webhookServer.on('ContentManagement.Entry.publish', req => {
   // console.log('An entry was published!')
-  new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
       let obj = JSON.parse(data)
@@ -66,11 +65,11 @@ webhookServer.on('ContentManagement.Entry.publish', (req => {
       resolve(data)
     })
   })
-}))
+})
 
-webhookServer.on('ContentManagement.Entry.unpublish', (req => {
+webhookServer.on('ContentManagement.Entry.unpublish', req => {
   // console.log('An entry was unpublished!')
-  new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
       let obj = JSON.parse(data)
@@ -79,7 +78,7 @@ webhookServer.on('ContentManagement.Entry.unpublish', (req => {
       resolve(data)
     })
   })
-}))
+})
 
 function cleanup () {
   console.log(` Bye .`)

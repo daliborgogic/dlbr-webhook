@@ -11,7 +11,6 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "contentful": "^4.5.0",
-    "contentful-webhook-server": "^1.2.0",
     "dotenv": "^4.0.0",
     "express": "^5.0.0-alpha.2",
     "lodash.remove": "^4.7.0"

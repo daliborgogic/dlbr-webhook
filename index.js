@@ -4,16 +4,24 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const remove = require('lodash.remove')
-const webhookServer = require('./lib/webhook-server')({
-  username: process.env.CONTENTFUL_WEBHOOK_USERNAME,
-  password: process.env.CONTENTFUL_WEBHOOK_PASSWORD
-})
-const PORT = process.env.PORT || 5000
 const contentful = require('contentful')
-const client = contentful.createClient({
-  space: process.env.CONTENTFUL_SPACE,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN
-})
+
+const {
+  PORT = 5000,
+  CONTENTFUL_WEBHOOK_USERNAME,
+  CONTENTFUL_WEBHOOK_PASSWORD,
+  CONTENTFUL_SPACE,
+  CONTENTFUL_ACCESS_TOKEN
+} = process.env
+
+const username = CONTENTFUL_WEBHOOK_USERNAME
+const password = CONTENTFUL_WEBHOOK_PASSWORD
+const space = CONTENTFUL_SPACE
+const accessToken = CONTENTFUL_ACCESS_TOKEN
+
+const webhookServer = require('./lib/webhook-server')({ username, password })
+
+const client = contentful.createClient({ space, accessToken })
 
 client.sync({ initial: true })
   .then(response => {
@@ -55,7 +63,7 @@ function writeFile (file, obj) {
 }
 
 webhookServer.on('ContentManagement.Entry.publish', req => {
-  console.log('An entry was published!')
+  // console.log('An entry was published!')
   return new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
@@ -68,7 +76,7 @@ webhookServer.on('ContentManagement.Entry.publish', req => {
 })
 
 webhookServer.on('ContentManagement.Entry.unpublish', req => {
-  console.log('An entry was unpublished!')
+  // console.log('An entry was unpublished!')
   return new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)

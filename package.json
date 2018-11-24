@@ -9,13 +9,14 @@
   "author": "Dalibor Gogic <mail@daliborgogic.com>",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.17.2",
-    "contentful": "^4.5.0",
+    "basic-auth": "^2.0.1",
+    "body-parser": "^1.18.3",
+    "contentful": "^4.6.5",
     "dotenv": "^4.0.0",
-    "express": "^5.0.0-alpha.2",
+    "express": "^5.0.0-alpha.7",
     "lodash.remove": "^4.7.0"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.18.6"
   }
 }

@@ -55,7 +55,7 @@ function writeFile (file, obj) {
 }
 
 webhookServer.on('ContentManagement.Entry.publish', req => {
-  // console.log('An entry was published!')
+  console.log('An entry was published!')
   return new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
@@ -68,7 +68,7 @@ webhookServer.on('ContentManagement.Entry.publish', req => {
 })
 
 webhookServer.on('ContentManagement.Entry.unpublish', req => {
-  // console.log('An entry was unpublished!')
+  console.log('An entry was unpublished!')
   return new Promise((resolve, reject) => {
     fs.readFile('entries.json', (err, data) => {
       if (err) reject(err)
